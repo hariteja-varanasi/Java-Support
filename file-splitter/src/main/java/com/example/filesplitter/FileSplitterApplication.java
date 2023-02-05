@@ -32,8 +32,7 @@ public class FileSplitterApplication {
             FileProcessor fileProcessor = new FileProcessorImpl();
             fileProcessor.processFile(input);
             //SpringApplication.run(FileSplitterApplication.class, args);
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

@@ -22,7 +22,7 @@ public class FileProcessorImpl implements FileProcessor {
     public void processFile(FileSplitterInput fileSplitterInput) {
         BufferedReader bufferedReader = null;
         JSONParser jsonParser = new JSONParser();
-        try{
+        try {
             /*bufferedReader = new BufferedReader(new FileReader(fileSplitterInput.getSourcePath()));
             String sCurrentLine;
             while ((sCurrentLine = bufferedReader.readLine()) != null) {
@@ -42,8 +42,7 @@ public class FileProcessorImpl implements FileProcessor {
             }*/
 
             //System.out.println("Number of Elements in JSON are : " + values.size());
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
