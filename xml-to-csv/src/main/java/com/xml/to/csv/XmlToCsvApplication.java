@@ -60,15 +60,6 @@ public class XmlToCsvApplication {
             loadOffernderIdDetailsMap(unzippedFiles);
             writeToCSV(offenderIdDetailsMap);
         }
-        /*offenderIdDetailsMap.entrySet().stream().forEach((entry) -> {
-            logger.info("******************************************************************* OFFENDER ID : " + entry.getKey() + " *******************************************************************");
-            entry.getValue().stream().forEach((map)->{
-                map.entrySet().stream().forEach((mapEntry) -> {
-                    logger.info("Key is : " + mapEntry.getKey() + " Value is : " + mapEntry.getValue());
-                });
-            });
-            System.out.println();
-        });*/
     }
 
     private static void writeToCSV(Map<String, List<Map<String, String>>> offenderIdDetailsMap){
@@ -274,5 +265,16 @@ public class XmlToCsvApplication {
         }
         return unzippedFiles;
     }
+
+    //Unwanted SOurce Code
+    /*offenderIdDetailsMap.entrySet().stream().forEach((entry) -> {
+            logger.info("******************************************************************* OFFENDER ID : " + entry.getKey() + " *******************************************************************");
+            entry.getValue().stream().forEach((map)->{
+                map.entrySet().stream().forEach((mapEntry) -> {
+                    logger.info("Key is : " + mapEntry.getKey() + " Value is : " + mapEntry.getValue());
+                });
+            });
+            System.out.println();
+        });*/
 
 }
