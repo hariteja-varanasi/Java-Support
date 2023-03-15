@@ -22,7 +22,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import com.example.file.converter.validator.HeaderValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
@@ -43,6 +42,7 @@ public class ConvertXMLToCsvService {
     private static String sourceFilePath;
     private static String destinationFilePath;
     private static String csvFilePath;
+    private static String txtFilePath;
     private static String zipFileName;
 
     @Value("${source.file.path}")
@@ -58,6 +58,11 @@ public class ConvertXMLToCsvService {
     @Value("${csv.file.path}")
     public void setCsvFilePath(String csvFilePath) {
         this.csvFilePath = csvFilePath;
+    }
+
+    @Value("${txt.file.path}")
+    public void setTxtFilePath(String txtFilePath) {
+        this.txtFilePath = txtFilePath;
     }
 
     /**
@@ -210,7 +215,8 @@ public class ConvertXMLToCsvService {
 
                     Element element = (Element) node;
                     //Prefix
-                    String prefix =  element.getElementsByTagName("HEADER").item(0).getTextContent();
+                    //String prefix =  element.getElementsByTagName("HEADER").item(0).getTextContent();
+                    String prefix =  fileName.substring(fileName.indexOf(".")+1, fileName.lastIndexOf("."));
                     String offenderId = null;
 
                     if("VA".equalsIgnoreCase(prefix)) {
@@ -341,6 +347,9 @@ public class ConvertXMLToCsvService {
                          String bookNumber) {
 
         if (node.hasChildNodes()){
+            if(prefix.startsWith("A")) {
+                prefix = "A";
+            }
             NodeList childNodeList = node.getChildNodes();
             List<String> duplicateList = new ArrayList<String>();
             for (int i = 0; i < childNodeList.getLength(); i++) {
@@ -402,6 +411,7 @@ public class ConvertXMLToCsvService {
     private void writeToCsvFile(Map<String,List<List<UserDefineNode>>> outputMap) {
         HeaderValidator headerValidator = new HeaderValidator();
         headerValidator.validateUserDefinedNodeMap(outputMap);
+        writeToTxtFile(outputMap);
         List<String[]> csvData = createCsvDataSimple(outputMap);
         try {
             String filePath = csvFilePath + zipFileName +".csv";
@@ -411,6 +421,40 @@ public class ConvertXMLToCsvService {
             }
 
         }catch(Exception e) {
+            logger.error("Exception while writing to CSV .. "+e.getMessage());
+        }
+    }
+
+    private void writeToTxtFile(Map<String,List<List<UserDefineNode>>> outputMap){
+        List<String> userDefinedNodesStringList = new ArrayList<String>();
+        try {
+            for (Map.Entry<String, List<List<UserDefineNode>>> entry : outputMap.entrySet()) {
+                List<List<UserDefineNode>> userDefinedNodeList = (List<List<UserDefineNode>>)entry.getValue();
+                for(int i=0; i<userDefinedNodeList.size(); i++) {
+                    List<UserDefineNode> userDefinedNodes = userDefinedNodeList.get(i);
+                    String userDefinedNodeString = new String();
+                    userDefinedNodeString = entry.getKey() + "|";
+                    for(int j=0; j< userDefinedNodes.size(); j++) {
+                        UserDefineNode userDefineNode = userDefinedNodes.get(j);
+                        if(j != userDefinedNodes.size()) {
+                            userDefinedNodeString = userDefinedNodeString + userDefineNode.getValue() + "|";
+                        }
+                        else {
+                            userDefinedNodeString = userDefinedNodeString + userDefineNode.getValue();
+                        }
+                    }
+                    userDefinedNodesStringList.add(userDefinedNodeString);
+                }
+            }
+            String filePath = txtFilePath + zipFileName +".txt";
+            FileWriter fileWriter = new FileWriter(filePath);
+            for(String userDefinedNodeString : userDefinedNodesStringList) {
+                fileWriter.write(userDefinedNodeString + System.lineSeparator());
+            }
+            fileWriter.close();
+            logger.info("Text File written successfully!");
+        }
+        catch (Exception e) {
             logger.error("Exception while writing to CSV .. "+e.getMessage());
         }
     }

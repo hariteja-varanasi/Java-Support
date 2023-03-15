@@ -47,8 +47,9 @@ public class HeaderValidator {
     private void addMissingHeaders(Map<String,List<List<UserDefineNode>>> outputMap) {
         for(Map.Entry entry : outputMap.entrySet()) {
             List<List<UserDefineNode>> nodeList = (List<List<UserDefineNode>>) entry.getValue();
-            List<String> existingHeaders = new ArrayList<String>();
-            for (List<UserDefineNode> nodeListInner : nodeList) {
+            for(int i=0; i< nodeList.size(); i++) {
+                List<UserDefineNode> nodeListInner = nodeList.get(i);
+                List<String> existingHeaders = new ArrayList<String>();
                 for(UserDefineNode node: nodeListInner) {
                     existingHeaders.add(node.getHeader());
                 }
@@ -61,14 +62,40 @@ public class HeaderValidator {
                     }
                 }
             }
+            /*for (List<UserDefineNode> nodeListInner : nodeList) {
+                List<String> existingHeaders = new ArrayList<String>();
+                for(UserDefineNode node: nodeListInner) {
+                    existingHeaders.add(node.getHeader());
+                }
+                for(String standardHeader : headerIndexMap.values()){
+                    if(!existingHeaders.contains(standardHeader)){
+                        UserDefineNode userDefineNode = new UserDefineNode();
+                        userDefineNode.setHeader(standardHeader);
+                        userDefineNode.setValue("");
+                        nodeListInner.add(userDefineNode);
+                    }
+                }
+            }*/
         }
     }
 
     private void sortUserDefinedNodes(Map<String,List<List<UserDefineNode>>> outputMap) {
         for (Map.Entry entry : outputMap.entrySet()) {
             List<List<UserDefineNode>> originalNodeList = (List<List<UserDefineNode>>) entry.getValue();
-            List<UserDefineNode> modifiedNodeList = new ArrayList<UserDefineNode>();
-            for (Map.Entry headerIndexEntry : headerIndexMap.entrySet()) {
+            for(int i=0; i< originalNodeList.size(); i++) {
+                List<UserDefineNode> modifiedNodeList = new ArrayList<UserDefineNode>();
+                List<UserDefineNode> nodeListInner = originalNodeList.get(i);
+                for (Map.Entry headerIndexEntry : headerIndexMap.entrySet()) {
+                    for (UserDefineNode node : nodeListInner) {
+                        if (node.getHeader().equals(String.valueOf(headerIndexEntry.getValue()))) {
+                            modifiedNodeList.add(Integer.parseInt(String.valueOf(headerIndexEntry.getKey())), node);
+                        }
+                    }
+                }
+                originalNodeList.set(i, modifiedNodeList);
+            }
+
+            /*for (Map.Entry headerIndexEntry : headerIndexMap.entrySet()) {
                 for (List<UserDefineNode> nodeListInner : originalNodeList) {
                     for (UserDefineNode node : nodeListInner) {
                         if (node.getHeader().equals(headerIndexEntry.getValue())) {
@@ -78,7 +105,7 @@ public class HeaderValidator {
                 }
             }
             originalNodeList.clear();
-            originalNodeList.add(0, modifiedNodeList);
+            originalNodeList.add(0, modifiedNodeList);*/
         }
     }
 
